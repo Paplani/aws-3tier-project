@@ -226,7 +226,7 @@ curl localhost
 
 ---
 
-## 7. Auto Scaling 확장 (Phase 3)
+## 3-1. Auto Scaling 확장 
 
 ### Step 9. Launch Template 생성
 
