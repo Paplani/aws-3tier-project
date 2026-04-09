@@ -191,9 +191,6 @@ RDS → Databases → Create database
 
 #### 3) app.js 수정
 
-#### 목적
-Node.js 앱이 실제로 RDS와 통신하는지 확인하기 위해 DB 테스트용 라우트를 추가하였다.
-
 const express = require("express");
 const pool = require("./db");
 
