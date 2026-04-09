@@ -49,42 +49,16 @@
 - 외부 요청이 DB까지 정상 반영되는지 확인
 
 ---
+## 그 다음 과정
 
-## Phase 7: CloudWatch (기본 모니터링)
-
-목표:
-- 인프라 상태 확인
-
-작업 내용:
-- EC2 CPU 확인
-- ALB 요청/응답 확인
-- RDS 상태 확인
-- Auto Scaling 동작 확인
+Core Build 재구축
+IAM + SSM
+Launch Template + Instance Refresh
+CloudWatch
 
 ---
 
-## Phase 8: CloudWatch (운영 관점)
-
-목표:
-- 장애 대응 및 모니터링 체계 구축
-
-작업 내용:
-- Dashboard 생성
-- Alarm 설정 (CPU, Health Check 등)
-- 로그 수집 구조 설계
-
----
-
-## Phase 9: 보안 및 운영 개선
-
-작업 내용:
-- .env 보안 강화
-- IAM Role 적용
-- SSM Session Manager 적용
-
----
-
-## Phase 10: HTTPS 적용 (최종 복습)
+##  HTTPS 적용 (최종 복습)
 
 작업 내용:
 - ACM 인증서 발급
