@@ -220,6 +220,9 @@ RDS → Databases → Create database
       console.log(`App listening on port ${PORT}`);
     });
 
+#### 목적
+Node.js 앱이 실제로 RDS와 통신하는지 확인하기 위해 DB 테스트용 라우트를 추가하였다.
+
 #### 핵심 포인트
 
 - db.js로 DB 설정 분리
