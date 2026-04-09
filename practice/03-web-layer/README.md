@@ -321,7 +321,7 @@ systemctl enable nginx
 
 ---
 
-## 8. 설정 값 정리
+## 4. 설정 값 정리
 
 ### EC2
 
@@ -347,7 +347,7 @@ systemctl enable nginx
 
 ---
 
-## 9. 결과 확인
+## 5. 결과 확인
 
 ### Target Group 상태
 
@@ -373,7 +373,7 @@ systemctl enable nginx
 
 ---
 
-## 10. 설계 기준
+## 6. 설계 기준
 
 * EC2는 Private Subnet에 배치하여 외부 직접 접근 차단
 * ALB를 통해서만 EC2 접근 가능하도록 구성
