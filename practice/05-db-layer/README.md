@@ -357,3 +357,55 @@ RDS는 단일 Subnet이 아닌 Subnet 그룹 기준으로 배치된다.
 - .env 적용
 - DB 구조 설계
 - 운영 관점 정리
+
+## 환경 변수 (.env) 적용!!!
+
+### 목적
+
+DB 접속 정보와 같은 민감한 데이터를 코드에서 분리하기 위해 .env 파일을 적용하였다.
+
+---
+
+### 적용 이유
+
+- DB 비밀번호 코드 하드코딩 방지
+- GitHub 업로드 시 보안 유지
+- 설정과 코드 분리 (운영 환경 대응)
+
+---
+
+### 적용 방법
+
+.env 파일 생성
+
+    DB_HOST=RDS-ENDPOINT
+    DB_USER=admin
+    DB_PASSWORD=비밀번호
+    DB_NAME=appdb
+    DB_PORT=3306
+
+db.js 수정
+
+    require("dotenv").config();
+
+    const pool = mysql.createPool({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT
+    });
+
+---
+
+### 주의사항
+
+- .env 파일은 GitHub에 업로드하지 않도록 .gitignore에 추가
+- 민감 정보는 코드에 직접 작성하지 않는다
+
+---
+
+### 배운 점
+
+- 애플리케이션과 설정을 분리하는 것이 중요하다
+- 보안은 코드가 아니라 구조에서 관리해야 한다
