@@ -191,34 +191,34 @@ RDS → Databases → Create database
 
 #### 3) app.js 수정
 
-const express = require("express");
-const pool = require("./db");
-
-const app = express();
-const PORT = 3000;
-const SERVER_NAME = process.env.SERVER_NAME || "unknown-server";
-
-app.get("/", (req, res) => {
-  res.send(`
-    <h1>App Layer Running</h1>
-    <p>Server: ${SERVER_NAME}</p>
-    <p>Port: ${PORT}</p>
-  `);
-});
-
-app.get("/db-test", async (req, res) => {
-  try {
-    const [rows] = await pool.query("SELECT NOW() AS now");
-    res.send(`DB Connected: ${rows[0].now}`);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("DB connection failed");
-  }
-});
-
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`App listening on port ${PORT}`);
-});
+    const express = require("express");
+    const pool = require("./db");
+    
+    const app = express();
+    const PORT = 3000;
+    const SERVER_NAME = process.env.SERVER_NAME || "unknown-server";
+    
+    app.get("/", (req, res) => {
+      res.send(`
+        <h1>App Layer Running</h1>
+        <p>Server: ${SERVER_NAME}</p>
+        <p>Port: ${PORT}</p>
+      `);
+    });
+    
+    app.get("/db-test", async (req, res) => {
+      try {
+        const [rows] = await pool.query("SELECT NOW() AS now");
+        res.send(`DB Connected: ${rows[0].now}`);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("DB connection failed");
+      }
+    });
+    
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`App listening on port ${PORT}`);
+    });
 
 #### 핵심 포인트
 
