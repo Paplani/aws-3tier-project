@@ -73,7 +73,8 @@ DB Layer에서는 기존 Private Subnet 구조를 그대로 활용하였다.
 ### Step 2. RDS Security Group 생성
 
 #### 목적
-DB는 외부에 노출되지 않고 App Layer만 접근해야 하므로, 접근 대상을 제한한다.
+DB는 아무 서버나 접근할 수 있게 열어두는 것이 아니라, App EC2만 접근 가능하도록 제한해야 한다.  
+따라서 RDS 전용 Security Group을 만들고, 인바운드 소스를 App EC2의 Security Group으로 지정하였다.
 
 #### 설정
 
@@ -111,6 +112,9 @@ RDS가 배치될 Subnet 영역을 정의
 #### 목적
 App Layer에서 사용할 DB 인스턴스 생성
 
+#### AWS 콘솔 경로
+RDS → Databases → Create database
+
 #### 설정
 
 - DB Identifier: aws-3tier-app-mysql
@@ -140,6 +144,9 @@ App Layer에서 사용할 DB 인스턴스 생성
 
 #### 목적
 애플리케이션 코드 문제와 네트워크 문제를 분리하기 위함
+
+#### 접속 흐름
+로컬 PC → Bastion Host → Private App EC2
 
 #### 실행
 
@@ -173,7 +180,7 @@ App Layer에서 사용할 DB 인스턴스 생성
       port: 3306,
       user: "admin",
       password: "비밀번호",
-      database: "aws-3tier-app-mysql",
+      database: "appdb",
       waitForConnections: true,
       connectionLimit: 10
     });
@@ -184,17 +191,37 @@ App Layer에서 사용할 DB 인스턴스 생성
 
 #### 3) app.js 수정
 
-    const pool = require("./db");
+#### 목적
+Node.js 앱이 실제로 RDS와 통신하는지 확인하기 위해 DB 테스트용 라우트를 추가하였다.
 
-    app.get("/db-test", async (req, res) => {
-      try {
-        const [rows] = await pool.query("SELECT NOW() AS now");
-        res.send(`DB Connected: ${rows[0].now}`);
-      } catch (error) {
-        console.error(error);
-        res.status(500).send("DB connection failed");
-      }
-    });
+const express = require("express");
+const pool = require("./db");
+
+const app = express();
+const PORT = 3000;
+const SERVER_NAME = process.env.SERVER_NAME || "unknown-server";
+
+app.get("/", (req, res) => {
+  res.send(`
+    <h1>App Layer Running</h1>
+    <p>Server: ${SERVER_NAME}</p>
+    <p>Port: ${PORT}</p>
+  `);
+});
+
+app.get("/db-test", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT NOW() AS now");
+    res.send(`DB Connected: ${rows[0].now}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("DB connection failed");
+  }
+});
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`App listening on port ${PORT}`);
+});
 
 #### 핵심 포인트
 
@@ -202,8 +229,27 @@ App Layer에서 사용할 DB 인스턴스 생성
 - app.js는 요청 처리만 담당
 - 구조 분리 → 유지보수 용이
 
+### Step 7. Node.js 앱 재실행
 
-### Step 7. 애플리케이션 실행 및 내부 테스트
+#### 목적
+수정한 app.js와 db.js 내용을 반영하기 위해 기존 프로세스를 종료하고 애플리케이션을 재실행하였다.
+
+#### 프로세스 확인
+    ps -ef | grep node
+
+#### 기존 프로세스 종료
+    kill <PID>
+
+필요 시 강제 종료:
+    kill -9 <PID>
+
+#### 다시 실행
+    node app.js
+
+#### 연결
+애플리케이션이 Port 3000에서 다시 실행되며, /db-test 라우트가 반영된 상태가 된다.
+
+### Step 8. 애플리케이션 실행 및 내부 테스트
 
 #### 실행
 
@@ -222,7 +268,7 @@ App Layer에서 사용할 DB 인스턴스 생성
 👉 Node.js ↔ RDS 연결 확인 완료
 
 
-### Step 8. ALB DNS로 최종 검증
+### Step 9. ALB DNS로 최종 검증
 
 📸 **ALB → DB 연결 결과**
 
