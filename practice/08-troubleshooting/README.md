@@ -120,10 +120,59 @@ EC2
 
 ---
 
+## 5. RDS Security Group 의 inbound rules 설정중 이해가 안됨
+
+### 문제
+
+RDS Security Group의 Inbound Rule 설정 시  
+Source를 무엇으로 설정해야 하는지 명확하지 않았다.
+
+### 원인
+
+문제의 원인은 “DB 접근을 어떤 기준으로 제한해야 하는지”에 대한 이해 부족이었다.
+
+초기에는 IP 기반으로 접근 제어를 생각하였다.
+
+- 0.0.0.0/0 → 모든 IP 허용 (보안 위험)
+- VPC CIDR → 내부 모든 리소스 허용 (과도한 접근 허용)
+
+즉, “누가 접근해야 하는지”가 아니라  
+“어디서 접근하는지(IP)” 기준으로 접근 제어를 생각한 것이 원인이었다.
+
+
+### 해결
+
+Source를 App EC2의 Security Group으로 설정하였다.
+
+설정 내용:
+
+- Port: 3306
+- Source: app-ec2-sg
+
+이렇게 설정하면 다음과 같은 효과가 있다.
+
+- App Layer에 속한 EC2만 DB 접근 가능
+- Bastion Host 및 다른 리소스 접근 차단
+- Auto Scaling으로 인스턴스가 늘어나도 동일 SG 사용으로 자동 허용
+
+
+### 배운 점
+
+DB 접근 제어는 IP 기준이 아니라 “계층(역할)” 기준으로 설계해야 한다.
+
+- DB는 App Layer만 접근해야 한다
+- Security Group을 Source로 사용하면 계층 기반 제어 가능
+- Auto Scaling 환경에서도 유연하게 대응 가능
+- 최소 권한 원칙(Least Privilege)을 적용할 수 있다
+
+👉 핵심:
+“누가 접근하는가”를 기준으로 보안을 설계해야 한다.
+
 ## 📌 최종 정리
 
 * NAT Gateway → Outbound 전용
 * Security Group → 리소스 단위 방화벽
 * Inbound / Outbound → 트래픽 방향 기준
 * Target Group → ALB의 전달 대상 목록
-
+* RDS → 관리형 DB로 운영 부담 감소
+* 전체 흐름 → Internet → ALB → App → RDS
