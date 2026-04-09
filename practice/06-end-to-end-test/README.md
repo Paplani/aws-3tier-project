@@ -161,6 +161,10 @@ CRUD API를 구현하였다.
 
     curl http://<ALB-DNS>/users
 
+📸 **웹에서 조회 결과**
+
+![read1](./images/read1.png)
+
 → name 값 변경 확인
 
 ---
