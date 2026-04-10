@@ -168,6 +168,26 @@ DB 접근 제어는 IP 기준이 아니라 “계층(역할)” 기준으로 설
 👉 핵심:
 “누가 접근하는가”를 기준으로 보안을 설계해야 한다.
 
+
+### 6. Launch Template 변경이 반영되지 않는 문제
+
+#### 문제
+- Launch Template Version 2 생성
+- Instance Refresh 실행
+- 하지만 웹 응답이 변경되지 않음
+
+#### 원인
+- Auto Scaling Group이 Launch Template의 default version 사용
+- Instance Refresh 시 최신 버전이 아닌 기존 버전 기준으로 실행됨
+
+#### 해결 방법
+- ASG → Launch Template version → latest로 변경
+- Instance Refresh → desired configuration에서 최신 버전 지정
+
+#### 결과
+- Instance 교체 후 웹 응답이 정상적으로 변경됨
+
+
 ## 📌 최종 정리
 
 * NAT Gateway → Outbound 전용
